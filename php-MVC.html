@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP + MySQL + MVC - Presentación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            line-height: 1.6;
+            overflow: hidden;
+        }
+        
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .slide {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 1100px;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+        
+        .slide.active {
+            display: block;
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        h1 {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        h2 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #87ceeb;
+        }
+        
+        p, li {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        
+        ul {
+            padding-left: 30px;
+        }
+        
+        .highlight {
+            background: rgba(255, 215, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .code-example {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            margin: 20px 0;
+            border-left: 4px solid #ffd700;
+            overflow-x: auto;
+        }
+        
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .flow-step {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 50%;
+            margin: 10px;
+            text-align: center;
+            min-width: 120px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .arrow {
+            font-size: 2em;
+            color: #ffd700;
+            margin: 0 10px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        
+        /* Navigation */
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 2em;
+            padding: 15px 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .prev-btn {
+            left: 20px;
+        }
+        
+        .next-btn {
+            right: 20px;
+        }
+        
+        .slide-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1.1em;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: #ffd700;
+            transition: width 0.3s ease;
+        }
+        
+        .php-icon {
+            font-size: 3em;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="php-icon">🐘</div>
+            <h1>PHP + MySQL + MVC</h1>
+            <p style="text-align: center; font-size: 1.5em;">De lo Básico al Desarrollo Profesional</p>
+            <div class="two-columns">
+                <div style="text-align: center;">
+                    <h3>PARTE 1</h3>
+                    <p>PHP + MySQL (PDO)<br>Formularios GET/POST</p>
+                </div>
+                <div style="text-align: center;">
+                    <h3>PARTE 2</h3>
+                    <p>Patrón MVC Completo<br>Sistema CRUD Profesional</p>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 30px; color: #87ceeb;">Base sólida antes de Laravel</p>
+        </div>
+
+        <!-- Slide 2: Objetivos -->
+        <div class="slide">
+            <h2>Objetivos de la Clase</h2>
+            
+            <h3>Al finalizar esta clase serás capaz de:</h3>
+            <ul>
+                <li>Conectar PHP con MySQL usando PDO de forma segura</li>
+                <li>Implementar operaciones CRUD completas</li>
+                <li>Manejar formularios con métodos GET y POST</li>
+                <li>Aplicar validaciones y medidas de seguridad</li>
+                <li>Organizar código usando el patrón MVC</li>
+                <li>Crear aplicaciones web estructuradas y mantenibles</li>
+            </ul>
+
+            <div class="feature-card" style="margin-top: 30px;">
+                <h3>🎯 Resultado Final</h3>
+                <p>Un sistema completo de gestión de usuarios con arquitectura profesional</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: PARTE 1 Introducción -->
+        <div class="slide">
+            <h2>PARTE 1: Fundamentos</h2>
+            
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <strong>PDO</strong><br>
+                    Conexión Segura
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-step">
+                    <strong>CRUD</strong><br>
+                    Operaciones BD
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-step">
+                    <strong>Formularios</strong><br>
+                    GET/POST
+                </div>
+            </div>
+
+            <h3>¿Por qué PDO?</h3>
+            <ul>
+                <li>Orientado a objetos y moderno</li>
+                <li>Compatible con múltiples bases de datos</li>
+                <li>Prepared statements contra inyección SQL</li>
+                <li>Manejo robusto de errores</li>
+            </ul>
+
+            <div class="feature-card">
+                <h3>🔒 Seguridad desde el inicio</h3>
+                <p>Aprenderemos las mejores prácticas de seguridad web</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: PDO vs Métodos Antiguos -->
+        <div class="slide">
+            <h2>PDO vs Métodos Antiguos</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>mysql_ (Obsoleto)</th>
+                        <th>PDO (Moderno)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Seguridad</td>
+                        <td>❌ Vulnerable a SQL injection</td>
+                        <td>✅ Prepared statements</td>
+                    </tr>
+                    <tr>
+                        <td>Bases de datos</td>
+                        <td>❌ Solo MySQL</td>
+                        <td>✅ MySQL, PostgreSQL, SQLite...</td>
+                    </tr>
+                    <tr>
+                        <td>Paradigma</td>
+                        <td>❌ Procedimental</td>
+                        <td>✅ Orientado a objetos</td>
+                    </tr>
+                    <tr>
+                        <td>Manejo de errores</td>
+                        <td>❌ Básico</td>
+                        <td>✅ Excepciones robustas</td>
+                    </tr>
+                    <tr>
+                        <td>Mantenimiento</td>
+                        <td>❌ Descontinuado</td>
+                        <td>✅ Activamente desarrollado</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight">
+                <p>PDO es la forma profesional y segura de trabajar con bases de datos en PHP</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Estructura CRUD -->
+        <div class="slide">
+            <h2>Operaciones CRUD</h2>
+            
+            <div class="two-columns">
+                <div>
+                    <h3>Create (Crear)</h3>
+                    <div class="code-example">INSERT INTO usuarios...</div>
+                    <p>Agregar nuevos registros</p>
+                </div>
+                <div>
+                    <h3>Read (Leer)</h3>
+                    <div class="code-example">SELECT * FROM usuarios...</div>
+                    <p>Consultar y mostrar datos</p>
+                </div>
+            </div>
+
+            <div class="two-columns">
+                <div>
+                    <h3>Update (Actualizar)</h3>
+                    <div class="code-example">UPDATE usuarios SET...</div>
+                    <p>Modificar registros existentes</p>
+                </div>
+                <div>
+                    <h3>Delete (Eliminar)</h3>
+                    <div class="code-example">DELETE FROM usuarios...</div>
+                    <p>Borrar registros</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h3>🔑 Prepared Statements</h3>
+                <p>Todas las operaciones usarán parámetros nombrados para máxima seguridad</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: GET vs POST -->
+        <div class="slide">
+            <h2>Métodos HTTP: GET vs POST</h2>
+            
+            <div class="two-columns">
+                <div class="feature-card">
+                    <h3>GET</h3>
+                    <ul style="text-align: left;">
+                        <li>Datos en la URL</li>
+                        <li>Visible al usuario</li>
+                        <li>Limitado en tamaño</li>
+                        <li>Ideal para búsquedas</li>
+                        <li>Se puede marcar/compartir</li>
+                        <li>Datos en $_GET</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>POST</h3>
+                    <ul style="text-align: left;">
+                        <li>Datos en el cuerpo</li>
+                        <li>Oculto del usuario</li>
+                        <li>Sin límite práctico</li>
+                        <li>Ideal para formularios</li>
+                        <li>No se puede marcar</li>
+                        <li>Datos en $_POST</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Casos de uso prácticos:</h3>
+            <ul>
+                <li><strong>GET:</strong> Buscar usuarios, filtros, paginación</li>
+                <li><strong>POST:</strong> Crear usuario, editar, login</li>
+                <li><strong>Híbrido:</strong> GET para mostrar formulario, POST para procesar</li>
+            </ul>
+        </div>
+
+        <!-- Slide 7: PARTE 2 Introducción -->
+        <div class="slide">
+            <h2>PARTE 2: Patrón MVC</h2>
+            
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <strong>MODEL</strong><br>
+                    Datos y Lógica
+                </div>
+                <div class="arrow">↔</div>
+                <div class="flow-step">
+                    <strong>CONTROLLER</strong><br>
+                    Coordinador
+                </div>
+                <div class="arrow">↔</div>
+                <div class="flow-step">
+                    <strong>VIEW</strong><br>
+                    Presentación
+                </div>
+            </div>
+
+            <h3>¿Por qué MVC?</h3>
+            <ul>
+                <li><strong>Separación de responsabilidades:</strong> Cada componente tiene una función clara</li>
+                <li><strong>Mantenibilidad:</strong> Cambios en una capa no afectan las otras</li>
+                <li><strong>Reutilización:</strong> Componentes reutilizables</li>
+                <li><strong>Trabajo en equipo:</strong> Diferentes roles pueden trabajar en paralelo</li>
+                <li><strong>Escalabilidad:</strong> Fácil agregar nuevas funcionalidades</li>
+            </ul>
+
+            <div class="feature-card">
+                <h3>🚀 Preparación para Laravel</h3>
+                <p>MVC es el patrón base de Laravel y la mayoría de frameworks modernos</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Anatomía MVC -->
+        <div class="slide">
+            <h2>Anatomía del Patrón MVC</h2>
+            
+            <div class="two-columns">
+                <div>
+                    <h3>📊 MODEL</h3>
+                    <p><strong>Responsabilidades:</strong></p>
+                    <ul>
+                        <li>Conexión a base de datos</li>
+                        <li>Operaciones CRUD</li>
+                        <li>Validaciones de negocio</li>
+                        <li>Lógica de datos</li>
+                    </ul>
+                    <div class="code-example">Usuario.php<br>crear(), leer(), actualizar(), eliminar()</div>
+                </div>
+                <div>
+                    <h3>🎮 CONTROLLER</h3>
+                    <p><strong>Responsabilidades:</strong></p>
+                    <ul>
+                        <li>Recibir peticiones HTTP</li>
+                        <li>Procesar formularios</li>
+                        <li>Llamar métodos del modelo</li>
+                        <li>Decidir qué vista mostrar</li>
+                    </ul>
+                    <div class="code-example">UsuarioController.php<br>index(), crear(), editar(), eliminar()</div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <h3>🖼️ VIEW</h3>
+                <p><strong>Responsabilidades:</strong></p>
+                <ul>
+                    <li>Mostrar datos al usuario</li>
+                    <li>Formularios HTML</li>
+                    <li>Interfaz de usuario</li>
+                    <li>Presentación visual</li>
+                </ul>
+                <div class="code-example">views/usuarios/<br>index.php, crear.php, editar.php</div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Flujo de Datos MVC -->
+        <div class="slide">
+            <h2>Flujo de Datos en MVC</h2>
+            
+            <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3>1. Usuario solicita una página</h3>
+                <p>http://localhost/usuarios/crear</p>
+                
+                <h3>2. Router dirige al Controlador</h3>
+                <p>UsuarioController::crear()</p>
+                
+                <h3>3. Controlador consulta el Modelo (si necesario)</h3>
+                <p>$usuario = new Usuario();</p>
+                
+                <h3>4. Modelo interactúa con la Base de Datos</h3>
+                <p>SELECT, INSERT, UPDATE, DELETE</p>
+                
+                <h3>5. Controlador envía datos a la Vista</h3>
+                <p>require_once 'views/usuarios/crear.php';</p>
+                
+                <h3>6. Vista genera HTML final</h3>
+                <p>Formulario HTML con datos dinámicos</p>
+                
+                <h3>7. Usuario ve la página completa</h3>
+                <p>Interfaz lista para interactuar</p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Estructura de Proyecto -->
+        <div class="slide">
+            <h2>Estructura del Proyecto MVC</h2>
+            
+            <div class="code-example">
+proyecto_mvc/
+├── config/
+│   └── database.php          # Configuración BD
+├── models/
+│   └── Usuario.php           # Modelo de datos
+├── controllers/
+│   └── UsuarioController.php # Lógica de aplicación
+├── views/
+│   ├── usuarios/
+│   │   ├── index.php         # Lista de usuarios
+│   │   ├── crear.php         # Formulario crear
+│   │   └── editar.php        # Formulario editar
+│   └── layouts/
+│       └── header.php        # Layout base
+├── public/
+│   ├── index.php             # Punto de entrada
+│   └── css/
+│       └── styles.css        # Estilos
+└── .htaccess                 # URLs amigables
+            </div>
+
+            <div class="feature-card">
+                <h3>📁 Organización Profesional</h3>
+                <p>Esta estructura es similar a la que encontrarán en Laravel y otros frameworks</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Validación y Seguridad -->
+        <div class="slide">
+            <h2>Validación y Seguridad</h2>
+            
+            <h3>🔒 Principios de Seguridad</h3>
+            <ul>
+                <li><strong>Nunca confíes en datos del usuario</strong></li>
+                <li><strong>Valida en el servidor, siempre</strong></li>
+                <li><strong>Escapa datos al mostrarlos</strong></li>
+                <li><strong>Usa prepared statements</strong></li>
+            </ul>
+
+            <div class="two-columns">
+                <div class="feature-card">
+                    <h3>Validaciones</h3>
+                    <ul style="text-align: left;">
+                        <li>Campos obligatorios</li>
+                        <li>Formato de email</li>
+                        <li>Longitud de texto</li>
+                        <li>Caracteres permitidos</li>
+                        <li>Unicidad de datos</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>Medidas de Seguridad</h3>
+                    <ul style="text-align: left;">
+                        <li>htmlspecialchars()</li>
+                        <li>strip_tags()</li>
+                        <li>filter_var()</li>
+                        <li>Prepared statements</li>
+                        <li>CSRF protection</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight">
+                <p>Un sistema seguro es un sistema confiable</p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Ventajas del Sistema MVC -->
+        <div class="slide">
+            <h2>Ventajas de Nuestro Sistema MVC</h2>
+            
+            <div class="two-columns">
+                <div>
+                    <h3>🎯 Para el Desarrollador</h3>
+                    <ul>
+                        <li>Código organizado y limpio</li>
+                        <li>Fácil mantenimiento</li>
+                        <li>Reutilización de componentes</li>
+                        <li>Debugging más sencillo</li>
+                        <li>Testing individual de capas</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>👥 Para el Equipo</h3>
+                    <ul>
+                        <li>Trabajo paralelo en capas</li>
+                        <li>Responsabilidades claras</li>
+                        <li>Onboarding más rápido</li>
+                        <li>Estándares consistentes</li>
+                        <li>Escalabilidad del proyecto</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h3>🚀 Preparación para Laravel</h3>
+                <p>Todo lo que aprenderán hoy es la base conceptual que Laravel automatiza y mejora</p>
+            </div>
+        </div>
+
+        <!-- Slide 13: Comparación con Laravel -->
+        <div class="slide">
+            <h2>PHP Puro vs Laravel</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Funcionalidad</th>
+                        <th>PHP Puro (Hoy)</th>
+                        <th>Laravel (Próximo)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Conexión BD</td>
+                        <td>PDO manual</td>
+                        <td>Eloquent ORM</td>
+                    </tr>
+                    <tr>
+                        <td>Consultas</td>
+                        <td>SQL directo</td>
+                        <td>Query Builder</td>
+                    </tr>
+                    <tr>
+                        <td>Vistas</td>
+                        <td>PHP + HTML</td>
+                        <td>Blade Templates</td>
+                    </tr>
+                    <tr>
+                        <td>Routing</td>
+                        <td>Switch manual</td>
+                        <td>Routes automáticas</td>
+                    </tr>
+                    <tr>
+                        <td>Validación</td>
+                        <td>Funciones propias</td>
+                        <td>Validation integrada</td>
+                    </tr>
+                    <tr>
+                        <td>Migraciones</td>
+                        <td>SQL manual</td>
+                        <td>Migrations automáticas</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight">
+                <p>Laravel automatiza todo lo que haremos manualmente hoy</p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Entregables y Evidencias -->
+        <div class="slide">
+            <h2>Entregables para sus Evidencias</h2>
+            
+            <h3>✅ AA2-EV01: CRUD con Base de Datos</h3>
+            <ul>
+                <li>Conexión PDO funcional</li>
+                <li>Operaciones Create, Read, Update, Delete</li>
+                <li>Validaciones y manejo de errores</li>
+                <li>Código comentado y organizado</li>
+            </ul>
+
+            <h3>✅ AA2-EV02: Formularios Web</h3>
+            <ul>
+                <li>Formularios HTML con GET y POST</li>
+                <li>Procesamiento de datos del usuario</li>
+                <li>Validación del lado del servidor</li>
+                <li>Interfaz web funcional</li>
+            </ul>
+
+            <h3>✅ AA3-EV01: Patrón MVC</h3>
+            <ul>
+                <li>Arquitectura MVC implementada</li>
+                <li>Separación clara de responsabilidades</li>
+                <li>Sistema escalable y mantenible</li>
+                <li>Estándares de codificación</li>
+            </ul>
+
+            <h3>✅ AA3-EV02: Pruebas y Documentación</h3>
+            <ul>
+                <li>Casos de prueba documentados</li>
+                <li>Screenshots de funcionalidades</li>
+                <li>Video demostrativo</li>
+                <li>Repositorio en Git</li>
+            </ul>
+        </div>
+
+        <!-- Slide 15: Resumen Final -->
+        <div class="slide">
+            <h2>¡Misión Cumplida! 🎉</h2>
+            
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <strong>PARTE 1</strong><br>
+                    PDO + CRUD<br>
+                    + Formularios
+                </div>
+                <div class="arrow">+</div>
+                <div class="flow-step">
+                    <strong>PARTE 2</strong><br>
+                    Patrón MVC<br>
+                    + Organización
+                </div>
+                <div class="arrow">=</div>
+                <div class="flow-step">
+                    <strong>RESULTADO</strong><br>
+                    Sistema Web<br>
+                    Profesional
+                </div>
+            </div>
+
+            <h3>🎓 Lo que han logrado:</h3>
+            <ul>
+                <li>Dominio de PDO y operaciones CRUD</li>
+                <li>Manejo profesional de formularios</li>
+                <li>Implementación del patrón MVC</li>
+                <li>Base sólida para Laravel</li>
+                <li>Código listo para sus evidencias</li>
+            </ul>
+
+            <div class="feature-card">
+                <h3>🚀 Próximo Destino: Laravel</h3>
+                <p>Ahora están preparados para aprovechar al máximo el framework más potente de PHP</p>
+            </div>
+
+            <p style="text-align: center; font-size: 1.5em; margin-top: 30px; color: #ffd700;">
+                ¡Felicidades por completar esta base fundamental! 🌟
+            </p>
+        </div>
+        
+        <!-- Navigation buttons -->
+        <button class="nav-button prev-btn" onclick="changeSlide(-1)">‹</button>
+        <button class="nav-button next-btn" onclick="changeSlide(1)">›</button>
+        
+        <!-- Slide counter -->
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">15</span>
+        </div>
+        
+        <!-- Progress bar -->
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            
+            currentSlide = (n + totalSlides) % totalSlides;
+            
+            slides[currentSlide].classList.add('active');
+            
+            // Update counter
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Update progress bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            
+            // Update navigation buttons
+            document.querySelector('.prev-btn').disabled = currentSlide === 0;
+            document.querySelector('.next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            if (direction === 1 && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (direction === -1 && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
